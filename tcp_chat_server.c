@@ -7,7 +7,7 @@
 #include <arpa/inet.h> // inet_ntoa
 #include <errno.h>
 
-int main(void)
+int main(int argc, char **argv)
 {
     int socket_fd, client_fd, len;
     char buf[512];
@@ -23,12 +23,12 @@ int main(void)
 
     memset((char *)&saddr, 0, sizeof(saddr)); // sizeof(struct sockaddr_in);
     saddr.sin_family = AF_INET;
-    saddr.sin_port = htons(9001);
+    saddr.sin_port = htons(atoi(argv[1]));
     saddr.sin_addr.s_addr = htonl(INADDR_ANY); // 0.0.0.0 = 0
 
     if(bind(socket_fd, (struct sockaddr *)&saddr, sizeof(saddr)) == -1) {
         printf("Socket binding error: %d\n", errno);
-	exit(-1);
+	    exit(-1);
     }
 
     printf("Socket created and binded.\n");
@@ -48,16 +48,20 @@ int main(void)
 
     printf("======\n");
 
-    len=recv(client_fd, buf, 512, 0);
-    buf[len]='\0';
-    printf("Got client message: %s\n", buf);
+    while(1) {
+        len=recv(client_fd, buf, 512, 0);
+        buf[len]='\0';
+        printf(">>> %s\n", buf);
 
-    sprintf(buf, "Reply from server.\n");
-    send(client_fd, buf, strlen(buf), 0);
-    printf("Reply sent.\n");
+        printf("<<<");
+        scanf("%s", buf);
+        if(buf[0]=='\\') break;
+        else send(client_fd, buf, strlen(buf), 0);
+    }
 
     close(client_fd);
     close(socket_fd);
+    printf("Socket closed.\n");
     
     return 0;
 }
