@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h> // memset
 #include <unistd.h>
+#include <fcntl.h> // fcntl
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h> // inet_ntoa
@@ -9,8 +10,8 @@
 
 int main(int argc, char **argv)
 {
-    int socket_fd, client_fd, len;
-    char buf[512];
+    int socket_fd, client_fd, len, i;
+    char rx_buf[256], tx_buf[256], tc;
     struct sockaddr_in saddr, caddr;
     unsigned int caddr_len;
 
@@ -46,17 +47,47 @@ int main(int argc, char **argv)
     }
     else printf("\nGot a connection from: %s:%d \n", inet_ntoa(caddr.sin_addr), ntohs(caddr.sin_port));
 
+    if(fcntl(client_fd, F_SETFL, fcntl(client_fd, F_GETFL) | O_NONBLOCK) == -1) {
+        printf("Set non-blocking flag error: %d \n", errno);
+        exit(-1);
+    }
+
     printf("======\n");
 
-    while(1) {
-        len=recv(client_fd, buf, 512, 0);
-        buf[len]='\0';
-        printf(">>> %s\n", buf);
+    fcntl(0, F_SETFL, O_NONBLOCK);
 
-        printf("<<<");
-        scanf("%s", buf);
-        if(buf[0]=='\\') break;
-        else send(client_fd, buf, strlen(buf), 0);
+    i=0;
+    printf("You: ");
+    fflush(stdout);
+    while(1) {
+        len=recv(client_fd, rx_buf, 256, 0);
+        if(len > 0) {
+            rx_buf[len]='\0';
+            fflush(stdin);
+            tx_buf[i]='\0';
+            printf("\rReceived: %s        \n", rx_buf);
+            printf("You: %s", tx_buf);
+            fflush(stdout);
+        }
+        else {
+            if(errno != EAGAIN) {
+                printf("Reveiving error: %d / %d \n", len, errno);
+                break;
+            }
+        }
+
+        if(read(0, &tc, 1) > 0) {
+            if(tc=='\n') {
+                if(tx_buf[0]=='\\') break;
+
+                tx_buf[i]='\0';
+                send(client_fd, tx_buf, strlen(tx_buf), 0);
+                printf("You: ");
+                fflush(stdout);
+                i=0;
+            }
+            else tx_buf[i++]=tc;
+        }
     }
 
     close(client_fd);
