@@ -7,6 +7,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h> // inet_ntoa
 #include <errno.h>
+#include <signal.h>
+
+int run;
 
 void broadcast_message(char *str, int *cfd, int cnt)
 {
@@ -15,6 +18,12 @@ void broadcast_message(char *str, int *cfd, int cnt)
     for(i=0; i<cnt; i++) {
         if(cfd[i] > 0) send(cfd[i], str, strlen(str), 0);
     }
+}
+
+void on_signal(int s)
+{
+    printf("Got signal: %d \n", s);
+    run=0;
 }
 
 int main(int argc, char **argv)
@@ -49,6 +58,10 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
+    run=1;
+    signal(SIGINT, on_signal);
+    signal(SIGTERM, on_signal);
+
     if(listen(socket_fd, 0) == -1) {
         printf("Socket listen error: %d\n", errno);
         exit(-1);
@@ -58,7 +71,7 @@ int main(int argc, char **argv)
     sleep(1);
     client_cnt=0;
 
-    while(1) {
+    while(run) {
         tfd=accept(socket_fd, (struct sockaddr *)&caddr, &caddr_len);
 
         // detect new user
@@ -69,7 +82,7 @@ int main(int argc, char **argv)
             sprintf(tx_buf, "Welcome, you are User#%d\n", client_cnt);
             send(tfd, tx_buf, strlen(tx_buf), 0);
 
-            printf("Ueser#%d joined\n", client_cnt);
+            printf("User#%d joined\n", client_cnt);
 
             sprintf(tx_buf, "### Welcome our new friend, User#%d\n", client_cnt++);
             broadcast_message(tx_buf, client_fd, client_cnt);
@@ -88,7 +101,7 @@ int main(int argc, char **argv)
                     client_fd[i]=-1;
                     sprintf(tx_buf, "\r### User#%d leaves this chatroom.      \n", i, rx_buf);
 
-                    printf("Ueser#%d leaved\n", i);
+                    printf("User#%d leaved\n", i);
                 }
                 else {
                     rx_buf[len]='\0';
@@ -100,8 +113,15 @@ int main(int argc, char **argv)
         }
     }
 
-    //close(client_fd);
     close(socket_fd);
+
+    sprintf(tx_buf, "The chatroom server is going to shutdown.\n");
+    broadcast_message(tx_buf, client_fd, client_cnt);
+
+    for(i=0; i<client_cnt; i++) {
+        if(client_fd[i] > 0) close(client_fd[i]);
+    }
+
     printf("Socket closed.\n");
     
     return 0;
