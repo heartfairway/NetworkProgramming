@@ -7,6 +7,6 @@ RUN zypper -n install build \
                       telnet \
                       git
 
-COPY *.c /root/
-
 WORKDIR /root/
+
+RUN git clone https://github.com/heartfairway/NetworkProgramming.git
