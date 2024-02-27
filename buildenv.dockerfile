@@ -1,7 +1,7 @@
-FROM opensuse/leap:15.3
+FROM opensuse/leap:15
 
 RUN zypper -n install build \
-                      gcc \
+                      gcc gcc-c++ \
                       make \
                       vim \
                       screen \
