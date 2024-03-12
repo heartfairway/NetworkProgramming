@@ -6,7 +6,9 @@ RUN zypper -n install build \
                       vim \
                       screen \
                       telnet \
-                      git
+                      git \
+                      tcpdump
+RUN mkdir /root/host
 
 WORKDIR /root/
 
