@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 struct curl_res_memory {
     char *memory;
@@ -29,6 +30,9 @@ int main(void)
     struct curl_res_memory curl_data;
     CURL *curl_handle;
     CURLcode res;
+
+    curl_data.memory=NULL;
+    curl_data.size=0;
 
     curl_handle = curl_easy_init();
 

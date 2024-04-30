@@ -7,7 +7,8 @@ RUN zypper -n install build \
                       screen \
                       telnet \
                       git \
-                      tcpdump
+                      tcpdump \
+                      libcurl-devel
 RUN mkdir /root/host
 
 WORKDIR /root/
