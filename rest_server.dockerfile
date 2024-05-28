@@ -4,11 +4,12 @@ WORKDIR /root
 
 RUN zypper -n install lighttpd libfcgi0 \
               vim gcc FastCGI-devel \
-              php7-cli php7-json php7-curl php7-fastcgi
+              php7-cli php7-json php7-curl php7-sockets php7-fastcgi
               
 
 ADD index.html /srv/www/htdocs/
 ADD index.php /srv/www/htdocs/
+ADD iot_ctrl.php /srv/www/htdocs/
 ADD cgi_hello.sh /srv/www/htdocs/
 ADD cgi.conf /etc/lighttpd/conf.d/
 ADD fastcgi.conf /etc/lighttpd/conf.d/
