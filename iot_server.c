@@ -14,9 +14,9 @@ void print_sw(uint8_t *sw)
     printf("\r| ");
     for(i=0; i<8; i++) {
         if(sw[i]) printf("^");
-	else printf("_");
+        else printf("_");
 
-	printf(" | ");
+        printf(" | ");
     }
 
     fflush(stdout);
@@ -50,8 +50,8 @@ int main(void)
 
     while(recvfrom(sfd, buf, 128, 0, (struct sockaddr *)&caddr, &caddr_len)) {
         csw=buf[0]-48;
-	cstat=buf[1]-48;
-	sw[csw]=cstat;
+        cstat=buf[1]-48;
+        sw[csw]=cstat;
 
         print_sw(sw);
     }
