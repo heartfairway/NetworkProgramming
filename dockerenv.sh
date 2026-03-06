@@ -15,13 +15,13 @@ if [ $# -lt 1 ]; then
 fi
 
 if [ "$1" = "setup" ]; then
-    docker build -t np_buildenv -f buildenv.dockerfile . --no-cache
+    docker build -t np_buildenv -f buildenv.containerfile . --no-cache
 
 elif [ "$1" = "new" ]; then
     if [ $# -lt 2 ]; then
         docker run --name np_practice -v $(pwd):/root/host -it np_buildenv bash
     else
-        docker run --name $2 -v $(pwd):/root/host -it iii5gc_buildenv bash
+        docker run --name $2 -v $(pwd):/root/host -it np_buildenv bash
     fi
 
 elif [ "$1" = "resume" ]; then
