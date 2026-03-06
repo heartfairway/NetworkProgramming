@@ -15,7 +15,7 @@ int main(void)
 
     s_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
-    if(s_fd < 0){
+    if(s_fd < 0) {
         printf("Socket fd open error: %d \n", errno);
 	exit(-1);
     }
