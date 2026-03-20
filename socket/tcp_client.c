@@ -17,7 +17,7 @@ int main(void)
 
     if(s_fd < 0){
         printf("Socket fd open error: %d \n", errno);
-	exit(-1);
+        exit(-1);
     }
 
     memset((char *) &server_addr, 0, sizeof(server_addr));
