@@ -19,9 +19,9 @@ if [ "$1" = "setup" ]; then
 
 elif [ "$1" = "new" ]; then
     if [ $# -lt 2 ]; then
-        podman run --name np_practice -v $(pwd):/root/host -it np_buildenv bash
+        podman run --name np_practice --cap-add=NET_ADMIN --cap-add=NET_RAW -v $(pwd):/root/host -it np_buildenv bash
     else
-        podman run --name $2 -v $(pwd):/root/host -it np_buildenv bash
+        podman run --name $2 --cap-add=NET_ADMIN --cap-add=NET_RAW -v $(pwd):/root/host -it np_buildenv bash
     fi
 
 elif [ "$1" = "resume" ]; then
