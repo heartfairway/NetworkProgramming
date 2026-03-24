@@ -26,9 +26,9 @@ elif [ "$1" = "new" ]; then
 
 elif [ "$1" = "resume" ]; then
     if [ $# -lt 2 ]; then
-        podman start -i np_practice
+        podman start -ai np_practice
     else
-        podman start -i $2
+        podman start -ai $2
     fi
 
 else
