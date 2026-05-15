@@ -13,7 +13,7 @@
         //var_dump($json);
 
         $i=$_GET['site'];
-        echo $json->{'records'}[$i]->{'county'}."<br>";
-        echo $json->{'records'}[$i]->{'sitename'}."<br>";
-        echo "AQI:".$json->{'records'}[$i]->{'aqi'}."<br>";
+        echo $json[$i]->{'county'}."<br>";
+        echo $json[$i]->{'sitename'}."<br>";
+        echo "AQI:".$json[$i]->{'aqi'}."<br>";
 ?>
